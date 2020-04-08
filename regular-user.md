@@ -101,6 +101,8 @@ command only:
 
 - `git clone git@github.com:mactsouk/d3-live.git`
 
+You might need to make changes to `./src/scripts/index.js` to match your Lenses
+installation and define your own SQL query.
 
 ### How to login
 

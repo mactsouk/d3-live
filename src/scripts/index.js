@@ -2,10 +2,14 @@ import axios from 'axios';
 import Websocket from 'ws';
 import { of } from 'rxjs';
 import { tap, filter, toArray, map, reduce, merge } from 'rxjs/operators';
+
 const username = 'admin';
 const password = 'admin';
-const authenticationUrl = 'http://localhost:4700/api/login'; // You need to change that PORT to your local machine PORT that Lenses is running on.
-const topicDataUrl = 'ws://localhost:4700/api/ws/v2/sql/execute';
+
+// You need to change that PORT to your local machine PORT that Lenses is running on.
+const authenticationUrl = 'http://localhost:3030/api/login';
+const topicDataUrl = 'ws://localhost:3030/api/ws/v2/sql/execute';
+
 const authenticationRequest = () => axios.post(authenticationUrl, {
   user: username,
   password
