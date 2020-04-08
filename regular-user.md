@@ -104,6 +104,9 @@ command only:
 You might need to make changes to `./src/scripts/index.js` to match your Lenses
 installation and define your own SQL query.
 
+The last thing you should do is execute `npm run start` to begin your application.
+If you are using `yarn`, execute `yarn start` instead.
+
 ### How to login
 
 The following JavaScript code is used for logging in Lenses in order to get the data.
