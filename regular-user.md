@@ -16,6 +16,10 @@ In order to be able to follow the steps of this tutorial, you will need the foll
 We are going to read live data from a Kafka topic using Lenses API and visualize
 it using D3.js The name of the Kafka topic is `...`.
 
+Please have in mind that that the purpose of this tutorial is not presenting
+the capabilities of the powerful D3.js library, but illustrating how you can
+use JavaScript to login and query data stored in Lenses.
+
 ## The implementation
 
 This section will present the steps needed for implementing the described
@@ -59,11 +63,15 @@ interest you and are going to be included in the visualization process.
 
 ### Visualizing Data
 
+This section will show the JavaScript code used for visualizing the data. As
+mentioned before, we are going to use the *D3.js* library for visualizing the
+data.
+
 
 
 Note that a visualization tells you information about the data you put to it.
 Therefore if you do not like the generated output, you should rethink the
-value of your data as well as the visualization you used.
+value of your data as well as the visualization type you used.
 
 ### The final output
 
