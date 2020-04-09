@@ -16,39 +16,39 @@ const authenticationRequest = () => axios.post(authenticationUrl, {
   .catch((error) => console.error(console.error('Error Response', error)));
 
 
-// Using Websocket for the SQL query
-const wsRequest = () => authenticationRequest().then(reqToken => {
-  const webSocketRequest = new WebSocket(topicDataUrl);
-  const firstMessage = {
-    token: reqToken,
-    stats: 2,
-    sql: "SELECT merchantId, count(*) FROM cc_payments GROUP BY merchantId",
-    live: false
-  };
-
-  webSocketRequest.onopen = () => {
-    webSocketRequest.send(JSON.stringify(firstMessage));
-    webSocketRequest.onmessage = (streamEvent) => {
-      of(streamEvent).pipe(
-        map(event => JSON.parse(event.data)),
-        filter(message => message.type === 'RECORD')
-      ).subscribe(message => messages.push(message.data.value));
+  // Using Websocket for the SQL query
+  const wsRequest = () => authenticationRequest().then(reqToken => {
+    const webSocketRequest = new WebSocket(topicDataUrl);
+    const firstMessage = {
+      token: reqToken,
+      stats: 2,
+      sql: "SELECT merchantId, count(*) FROM cc_payments GROUP BY merchantId",
+      live: false
     };
-  };
-  return messages;
-});
 
-var messages = [];
-var data = messages;
-console.log(typeof data, 'TYPEOF');
+    var messages = [];
 
-wsRequest();
-console.log(typeof messages, 'TYPEOF MESSAGES');
-console.log(data, 'OUTSIDE RUN');
+    webSocketRequest.onopen = () => {
+      webSocketRequest.send(JSON.stringify(firstMessage));
+      webSocketRequest.onmessage = (streamEvent) => {
+        of(streamEvent).pipe(
+          map(event => JSON.parse(event.data)),
+          filter(message => message.type === 'RECORD')
+        ).subscribe(message => messages.push(message.data.value));
+      };
+    };
+    console.log(messages, 'MESSAGES');
+    return messages;
+  });
 
+  var data = Promise.resolve(Promise.resolve(wsRequest()));
+  console.log(data, 'DATA');
 
-var max = d3.max(data, function(d) { return d.count; });
-console.log(max, 'max');
+  console.log(data.length, 'LENGTH');
+
+  var max = d3.max(data, function(d) { return d.count; });
+  console.log(max, 'max');
+
 
 var width = 1200;
 var height = 1000;
