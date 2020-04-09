@@ -15,6 +15,7 @@ const authenticationRequest = () => axios.post(authenticationUrl, {
   .then((response) => response.data)
   .catch((error) => console.error(console.error('Error Response', error)));
 
+
 // Using Websocket for the SQL query
 const wsRequest = () => authenticationRequest().then(reqToken => {
   const webSocketRequest = new WebSocket(topicDataUrl);
@@ -25,8 +26,6 @@ const wsRequest = () => authenticationRequest().then(reqToken => {
     live: false
   };
 
-  var messages = [];
-
   webSocketRequest.onopen = () => {
     webSocketRequest.send(JSON.stringify(firstMessage));
     webSocketRequest.onmessage = (streamEvent) => {
@@ -36,12 +35,20 @@ const wsRequest = () => authenticationRequest().then(reqToken => {
       ).subscribe(message => messages.push(message.data.value));
     };
   };
-  console.log(messages, 'MESSAGES');
   return messages;
 });
 
-var data = wsRequest();
-console.log(data, 'DATA');
+var messages = [];
+var data = messages;
+console.log(typeof data, 'TYPEOF');
+
+wsRequest();
+console.log(typeof messages, 'TYPEOF MESSAGES');
+console.log(data, 'OUTSIDE RUN');
+
+
+var max = d3.max(data, function(d) { return d.count; });
+console.log(max, 'max');
 
 var width = 1200;
 var height = 1000;
@@ -61,20 +68,15 @@ var svg = d3.select("body")
       .attr("height", height)
       .attr("fill", "lightblue");
 
-
     // Add X axis
   var x = d3.scaleLinear()
       .domain([0, data.length-1])
       .range([5, width]);
 
-
     svg.append("g")
       .attr("transform", "translate(0," + height + ")")
       .attr("class", "y axis")
       .call(d3.axisBottom(x));
-
-	var max = d3.max(data, function(d) { console.log(d.count); return d.count; });
-	console.log(max, "MAX");
 
     // Add Y axis
     var y = d3.scaleLinear()
