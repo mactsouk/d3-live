@@ -36,10 +36,11 @@ const wsRequest = () => authenticationRequest().then(reqToken => {
       ).subscribe(message => messages.push(message.data.value));
     };
   };
+  console.log(messages, 'MESSAGES');
   return messages;
 });
 
-var data = wsRequest().then(results => console.log(results, 'R'));
+var data = wsRequest();
 console.log(data, 'DATA');
 
 var width = 1200;
@@ -60,6 +61,7 @@ var svg = d3.select("body")
       .attr("height", height)
       .attr("fill", "lightblue");
 
+
     // Add X axis
   var x = d3.scaleLinear()
       .domain([0, data.length-1])
@@ -71,8 +73,8 @@ var svg = d3.select("body")
       .attr("class", "y axis")
       .call(d3.axisBottom(x));
 
-	  var max = d3.max(data, function(d) { console.log(d.count); return d.count; });
-	  console.log(max);
+	var max = d3.max(data, function(d) { console.log(d.count); return d.count; });
+	console.log(max, "MAX");
 
     // Add Y axis
     var y = d3.scaleLinear()
