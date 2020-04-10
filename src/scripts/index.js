@@ -20,12 +20,14 @@ async function authenticationRequest() {
 }
 
 const webSocketRequest = new WebSocket(topicDataUrl);
-const websocketData = new Array;
+var websocketData = new Array;
 const websocketSubject = new Subject();
 
 // We are waiting for the authentication token
 async function requestToWSEndpoint() {
   const reqToken = await authenticationRequest();
+
+  websocketData = [];
 
   // This is an object with the authentication token + query
   // This is the first message for the Websocket connection
@@ -64,9 +66,9 @@ async function requestToWSEndpoint() {
 
   // finanize() will return data when the stream has finished.
   websocketSubject.pipe(finalize(() => {
-    var width = 1200;
+    var width = 1400;
     var height = 1000;
-    var margin = { top: 50, right: 50, bottom: 50, left: 50 };
+    var margin = { top: 50, right: 40, bottom: 50, left: 40 };
     var width = width - margin.left - margin.right;
     var height = height - margin.top - margin.bottom;
 
@@ -82,40 +84,32 @@ async function requestToWSEndpoint() {
       .attr("height", height)
       .attr("fill", "lightblue");
 
-      var max = d3.max(websocketData, function (d) { return d.count; });
-      console.log(max, "MAX");
+    websocketData.sort(function(x, y){
+        return d3.ascending(x.merchantId, y.merchantId);
+     });
 
-    // Add X axis
-    var x = d3.scaleLinear()
-    .domain([0, websocketData.length-1 + 10])
-    .range([5, width]);
+    var max = d3.max(websocketData, function (d) { return d.count; });
+
+    var x = d3.scaleBand().range([0, width]).padding(0.1);
+    var y = d3.scaleLinear().range([height, 0]);
+    x.domain(websocketData.map(function(d) { return d.merchantId; }));
+    y.domain([0, max]);
 
     svg.append("g")
       .attr("transform", "translate(0," + height + ")")
-      .attr("class", "y axis")
       .call(d3.axisBottom(x));
 
-
-    // Add Y axis
-    var y = d3.scaleLinear()
-      .domain([0, max+10])
-      .range([height, 0]);
-    
     svg.append("g")
-     .attr("class", "y axis")
-     .call(d3.axisLeft(y));
+      .call(d3.axisLeft(y));
 
-    svg.append("g")
-    .selectAll('dot')
-     .data(websocketData)
-     .enter().
-    append('circle')
-     .attr('cy', function(d) { return y(d.count); } )
-       .attr('cx', function(d) { return x(d.merchantId); } )
-       .attr('r', 4)
-    .style("fill", "#ff3312");
-
-
+    svg.selectAll(".bar")
+      .data(websocketData)
+      .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.merchantId); })
+      .attr("width", x.bandwidth())
+      .attr("y", function(d) { return y(d.count); })
+      .attr("height", function(d) { return height - y(d.count); });
   
   })).subscribe();
 }());
