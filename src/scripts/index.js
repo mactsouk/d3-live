@@ -1,104 +1,121 @@
 import axios from 'axios';
 import Websocket from 'ws';
-import { of } from 'rxjs';
-import { tap, filter, toArray, map, reduce, merge } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 const username = 'admin';
 const password = 'admin';
 
-// You need to change that PORT to your local machine PORT that Lenses is running on.
 const authenticationUrl = 'http://localhost:3030/api/login';
 const topicDataUrl = 'ws://localhost:3030/api/ws/v2/sql/execute';
 
-const authenticationRequest = () => axios.post(authenticationUrl, {
-  user: username, password })
-  .then((response) => response.data)
-  .catch((error) => console.error(console.error('Error Response', error)));
+async function authenticationRequest() {
+  const AuthenticateWith = await axios.post(authenticationUrl, {
+    user: username,
+    password
+  })
+    .then(response => response.data)
+    .catch((error) => console.error('Error:', error));
+  return AuthenticateWith;
+}
 
+const webSocketRequest = new WebSocket(topicDataUrl);
+const websocketData = new Array;
+const websocketSubject = new Subject();
 
-  // Using Websocket for the SQL query
-  const wsRequest = () => authenticationRequest().then(reqToken => {
-    const webSocketRequest = new WebSocket(topicDataUrl);
-    const firstMessage = {
-      token: reqToken,
-      stats: 2,
-      sql: "SELECT merchantId, count(*) FROM cc_payments GROUP BY merchantId",
-      live: false
+// We are waiting for the authentication token
+async function requestToWSEndpoint() {
+  const reqToken = await authenticationRequest();
+
+  // This is an object with the authentication token + query
+  // This is the first message for the Websocket connection
+  const firstMessage = {
+    token: reqToken,
+    stats: 2,
+    sql: "SELECT merchantId, count(*) FROM cc_payments GROUP BY merchantId",
+    live: false
+  };
+
+  // We open the Websocket
+  webSocketRequest.onopen = () => {
+    // Here, we send the message
+    webSocketRequest.send(JSON.stringify(firstMessage));
+
+    // Here, the onmessage() method is executed each time we receive a message
+    // from the Websocket connection.
+    webSocketRequest.onmessage = (streamEvent) => {
+      // This streamEvent is an object that has a data attribute.
+      // That data attribute has a type property, which can be
+      // RECORD, END or ERROR.
+      const isRecord = JSON.parse(streamEvent.data).type === 'RECORD';
+      const isComplete = JSON.parse(streamEvent.data).type === 'END';
+      const isError = JSON.parse(streamEvent.data).type === 'ERROR';
+
+      websocketSubject.next(websocketData);
+      isRecord && websocketData.push(JSON.parse(streamEvent.data).data.value);
+      isError && websocketSubject.console.error((error) => console.error(error));
+      isComplete && websocketSubject.complete();
     };
+  };
+};
 
-    var messages = [];
+(async function () {
+  await requestToWSEndpoint();
 
-    webSocketRequest.onopen = () => {
-      webSocketRequest.send(JSON.stringify(firstMessage));
-      webSocketRequest.onmessage = (streamEvent) => {
-        of(streamEvent).pipe(
-          map(event => JSON.parse(event.data)),
-          filter(message => message.type === 'RECORD')
-        ).subscribe(message => messages.push(message.data.value));
-      };
-    };
-    console.log(messages, 'MESSAGES');
-    return messages;
-  });
+  // finanize() will return data when the stream has finished.
+  websocketSubject.pipe(finalize(() => {
+    var width = 1200;
+    var height = 1000;
+    var margin = { top: 50, right: 50, bottom: 50, left: 50 };
+    var width = width - margin.left - margin.right;
+    var height = height - margin.top - margin.bottom;
 
-  var data = Promise.resolve(Promise.resolve(wsRequest()));
-  console.log(data, 'DATA');
+    var svg = d3.select("body")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  console.log(data.length, 'LENGTH');
-
-  var max = d3.max(data, function(d) { return d.count; });
-  console.log(max, 'max');
-
-
-var width = 1200;
-var height = 1000;
-var margin = {top: 50, right: 50, bottom: 50, left: 50};
-var width = width - margin.left - margin.right;
-var height = height - margin.top - margin.bottom;
-
-var svg = d3.select("body")
-  .append("svg")
-	  .attr("width", width + margin.left + margin.right)
-	  .attr("height", height + margin.top + margin.bottom)
-	  .append("g")
-	  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  svg.append("rect")
+    svg.append("rect")
       .attr("width", width)
       .attr("height", height)
       .attr("fill", "lightblue");
 
+      var max = d3.max(websocketData, function (d) { return d.count; });
+      console.log(max, "MAX");
+
     // Add X axis
-  var x = d3.scaleLinear()
-      .domain([0, data.length-1])
-      .range([5, width]);
+    var x = d3.scaleLinear()
+    .domain([0, websocketData.length-1 + 10])
+    .range([5, width]);
 
     svg.append("g")
       .attr("transform", "translate(0," + height + ")")
       .attr("class", "y axis")
       .call(d3.axisBottom(x));
 
+
     // Add Y axis
     var y = d3.scaleLinear()
-      .domain([0, max])
+      .domain([0, max+10])
       .range([height, 0]);
+    
+    svg.append("g")
+     .attr("class", "y axis")
+     .call(d3.axisLeft(y));
 
     svg.append("g")
-	  .attr("class", "y axis")
-      .call(d3.axisLeft(y));
+    .selectAll('dot')
+     .data(websocketData)
+     .enter().
+    append('circle')
+     .attr('cy', function(d) { return y(d.count); } )
+       .attr('cx', function(d) { return x(d.merchantId); } )
+       .attr('r', 4)
+    .style("fill", "#ff3312");
 
-    // Add the line
-    svg.append("path")
-      .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-width", 1.5)
-      .attr("d", d3.line()
-        .x(function (d) {
-          console.log(d, 'inside');
-          return x(d.merchantId);
-        })
-        .y(function (d) {
-          return y(d.count);
-        })
-      );
+
+  
+  })).subscribe();
+}());
