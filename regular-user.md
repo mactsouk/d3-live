@@ -1,3 +1,4 @@
+
 This blog post is about getting live data from Lenses and visualizing it using
 JavaScript and the [D3.js](https://d3js.org/) library.
 
@@ -52,44 +53,44 @@ You will then need to make changes to the following files:
 
 The contents of `package.json` should be the following:
 
-	{
-	  "name": "d3-live",
-	  "version": "0.0.1",
-	  "repository": "https://github.com/mactsouk/d3-live.git",
-	  "description": "A D3 Representation of an SQL Processor when Authenticated and using the Lenses API",
-	  "scripts": {
-	    "build": "cross-env NODE_ENV=production webpack --config webpack/webpack.config.prod.js --colors",
-	    "start": "webpack-dev-server --open --config webpack/webpack.config.dev.js"
-	  },
-	  "author": "Lenses.io",
-	  "license": "MIT",
-	  "devDependencies": {
-	    "@babel/core": "^7.9.0",
-	    "@babel/plugin-proposal-class-properties": "^7.8.3",
-	    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-	    "@babel/preset-env": "^7.9.0",
-	    "babel-loader": "^8.1.0",
-	    "clean-webpack-plugin": "^3.0.0",
-	    "copy-webpack-plugin": "^5.1.1",
-	    "cross-env": "^7.0.2",
-	    "eslint": "^6.8.0",
-	    "eslint-loader": "^3.0.3",
-	    "file-loader": "^5.1.0",
-	    "html-webpack-plugin": "^4.0.0-beta.11",
-	    "mini-css-extract-plugin": "^0.9.0",
-	    "webpack": "^4.42.1",
-	    "webpack-cli": "^3.3.11",
-	    "webpack-dev-server": "^3.10.3",
-	    "webpack-merge": "^4.2.2"
-	  },
-	  "dependencies": {
-	    "@babel/polyfill": "^7.8.7",
-	    "axios": "^0.19.2",
-	    "core-js": "^3.6.4",
-	    "rxjs": "^6.5.5",
-	    "ws": "^7.2.3"
-	  }
-	}
+    {
+      "name": "d3-live",
+      "version": "0.0.1",
+      "repository": "https://github.com/mactsouk/d3-live.git",
+      "description": "A D3 Representation of an SQL Processor when Authenticated and using the Lenses API",
+      "scripts": {
+        "build": "cross-env NODE_ENV=production webpack --config webpack/webpack.config.prod.js --colors",
+        "start": "webpack-dev-server --open --config webpack/webpack.config.dev.js"
+      },
+      "author": "Lenses.io",
+      "license": "MIT",
+      "devDependencies": {
+        "@babel/core": "^7.9.0",
+        "@babel/plugin-proposal-class-properties": "^7.8.3",
+        "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+        "@babel/preset-env": "^7.9.0",
+        "babel-loader": "^8.1.0",
+        "clean-webpack-plugin": "^3.0.0",
+        "copy-webpack-plugin": "^5.1.1",
+        "cross-env": "^7.0.2",
+        "eslint": "^6.8.0",
+        "eslint-loader": "^3.0.3",
+        "file-loader": "^5.1.0",
+        "html-webpack-plugin": "^4.0.0-beta.11",
+        "mini-css-extract-plugin": "^0.9.0",
+        "webpack": "^4.42.1",
+        "webpack-cli": "^3.3.11",
+        "webpack-dev-server": "^3.10.3",
+        "webpack-merge": "^4.2.2"
+      },
+      "dependencies": {
+        "@babel/polyfill": "^7.8.7",
+        "axios": "^0.19.2",
+        "core-js": "^3.6.4",
+        "rxjs": "^6.5.5",
+        "ws": "^7.2.3"
+      }
+    }
 
 Now you should execute
 
