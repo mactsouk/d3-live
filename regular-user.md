@@ -15,7 +15,7 @@ In order to be able to follow the steps of this tutorial, you will need the foll
 ## The scenario
 
 We are going to read live data from a Kafka topic using Lenses API and visualize
-it using D3.js The name of the Kafka topic is `...`.
+it using D3.js The name of the Kafka topic is `cc_payments`.
 
 Please have in mind that that the purpose of this tutorial is not presenting
 the capabilities of the powerful D3.js library, but illustrating how you can
