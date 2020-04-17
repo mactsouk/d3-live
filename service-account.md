@@ -30,6 +30,7 @@ scenario beginning from Lenses.
 
 As we are using a service account, we do not need to login to Lenses first.
 
+
 The following JavaScript code is used for getting the data from Lenses.
 
 
