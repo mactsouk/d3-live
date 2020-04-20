@@ -2,7 +2,7 @@
   "name": "d3-live",
   "version": "0.0.1",
   "repository": "https://github.com/mactsouk/d3-live.git",
-  "description": "A D3 Representation of an SQL Processor when Authenticated and using the Lenses API",
+  "description": "A D3 Representation of live data when Authenticated and using the Lenses API",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --config webpack/webpack.config.prod.js --colors",
     "start": "webpack-dev-server --open --config webpack/webpack.config.dev.js"
